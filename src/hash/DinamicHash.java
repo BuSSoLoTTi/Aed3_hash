@@ -52,24 +52,59 @@ public class DinamicHash {
             int hash = hash(registro.getCpf());
             if (this.directory[hash] == -1) {
                 currentBucket = new Bucket(this.depth);
-                long[] values = currentBucket.getValues();
-                for (int i = 0; i < values.length; i++) {
-                    if (values[i] == -1) {
-                        values[i] = addMaster(registro);
-                        currentBucket.setValues(values);
-                        this.directory[hash]= (int) addIndex(currentBucket);
-                        return true;
-                    }
+                if(addBucket(registro,hash)){
+                    saveDirectory();
+                    return true;
                 }
             }
             else{
                 currentBucket = getIndex(this.directory[hash]);
+                if(addBucket(registro,hash)){
+                    saveDirectory();
+                    return true;
+                }else {
+                    changeDepthAdd(registro,hash);
+                    if (addBucket(registro,hash)){
+                        saveDirectory();
+                        return true;
+                    }
+                }
             }
         }catch (IOException e){
             e.printStackTrace();
         }
-
         return false;
+    }
+
+    private boolean addBucket(Registro registro,int hash) throws IOException {
+        long[] values = currentBucket.getValues();
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == -1) {
+                values[i] = addMaster(registro);
+                currentBucket.setValues(values);
+                this.directory[hash]= (int) addIndex();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean changeDepthAdd(Registro registro,int hash){
+        Bucket oudBuket = currentBucket;
+        chageDepth();
+        Bucket bucket = new Bucket(this.depth);
+
+
+    }
+
+    private void chageDepth(){
+        int oudDepth = this.depth;
+        this.depth++;
+        int[] newDirectory = new int[(int) Math.pow(2,depth)];
+        for (int i = 0; i < newDirectory.length; i++) {
+            newDirectory[i]=this.directory[i%oudDepth];
+        }
+        this.directory=newDirectory;
     }
 
     private long addMaster(Registro registro) throws IOException {
@@ -80,11 +115,11 @@ public class DinamicHash {
         file.close();
         return endFile;
     }
-    private long addIndex(Bucket bucket) throws IOException {
+    private long addIndex() throws IOException {
         RandomAccessFile file = openFile(this.indexFile);
         long endFile = file.length();
         file.seek(endFile);
-        file.write(bucket.toByteArray());
+        file.write(currentBucket.toByteArray());
         file.close();
         return endFile;
     }
@@ -95,6 +130,19 @@ public class DinamicHash {
         file.read(read,i,Bucket.SIZE);
 
         return null;
+    }
+
+    private void saveDirectory(){
+        try {
+            RandomAccessFile file = openFile(directoryFile);
+            file.seek(0);
+            file.writeInt(depth);
+            for (int i = 0; i < directory.length; i++) {
+                file.writeInt(directory[i]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Registro find(int key){

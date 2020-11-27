@@ -10,12 +10,14 @@ public class Bucket {
     private static final int SIZE_BUCKET = 5; //valor simbolico para o numero do tamanho do bucket
     private int depth;
     private long[] values;
+    private int[] key;
 
     public Bucket(int deph){
         this.depth=deph;
         values = new  long[SIZE_BUCKET];
+        key = new  int[SIZE_BUCKET];
         for (int i = 0; i < SIZE_BUCKET; i++) {
-            values[i]=-1;
+            key[i]=-1;
         }
     }
 
@@ -41,6 +43,9 @@ public class Bucket {
         DataOutputStream saida = new DataOutputStream( dados );
         saida.writeInt(depth);
         for (int i = 0; i < SIZE_BUCKET; i++) {
+            saida.writeInt(key[i]);
+        }
+        for (int i = 0; i < SIZE_BUCKET; i++) {
             saida.writeLong(values[i]);
         }
         return dados.toByteArray();
@@ -50,10 +55,15 @@ public class Bucket {
         ByteArrayInputStream dados = new ByteArrayInputStream(bytes);
         DataInputStream entrada = new DataInputStream(dados);
         this.depth=entrada.readInt();
+        int[] key = new int[SIZE_BUCKET];
         long[] values = new long[SIZE_BUCKET];
+        for (int i = 0; i < SIZE_BUCKET; i++) {
+            key[i]=entrada.readInt();
+        }
         for (int i = 0; i < SIZE_BUCKET; i++) {
             values[i]=entrada.readLong();
         }
+        this.key=key;
         this.values=values;
     }
 
