@@ -53,9 +53,12 @@ public class DinamicHash {
             if (this.directory[hash] == -1) {
                 currentBucket = new Bucket(this.depth);
                 long[] values = currentBucket.getValues();
+                int [] keys = currentBucket.getKeys();
                 for (int i = 0; i < values.length; i++) {
-                    if (values[i] == -1) {
+                    if (keys[i] == -1) {
+                        keys[i]=registro.getCpf();
                         values[i] = addMaster(registro);
+                        currentBucket.setKeys(keys);
                         currentBucket.setValues(values);
                         this.directory[hash]= (int) addIndex(currentBucket);
                         return true;
