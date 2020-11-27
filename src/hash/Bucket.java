@@ -66,7 +66,11 @@ public class Bucket {
         ByteArrayInputStream dados = new ByteArrayInputStream(bytes);
         DataInputStream entrada = new DataInputStream(dados);
         this.depth=entrada.readInt();
+<<<<<<< HEAD
         int[] key = new int[SIZE_BUCKET];
+=======
+        long[] keys = new long[SIZE_BUCKET];
+>>>>>>> master
         long[] values = new long[SIZE_BUCKET];
         for (int i = 0; i < SIZE_BUCKET; i++) {
             keys[i]=entrada.readInt();
