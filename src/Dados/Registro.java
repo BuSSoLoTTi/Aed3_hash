@@ -1,25 +1,28 @@
 package Dados;
 
+import java.io.*;
 import java.time.LocalDate;
 
 public class Registro {
     private static final int MAX_LENGTH_NAME = 30;
-    private static final int MAX_LENGTH_GENDER = 10;
+    public static final int SIZE = 352;
     private static final int MAX_LENGTH_DESCRIPTION = 300;
+    private int cpf;
     private String name;
     private LocalDate birthDate;
-    private String gender;
+    private char gender;
     private String description;
 
 
-    private Registro() {
+    public Registro() {
     }
 
-    public Registro(String name, LocalDate birthDate, String gender, String description) {
+    public Registro(String name,int cpf, LocalDate birthDate, char  gender, String description) {
         this.name = resizeString(name, MAX_LENGTH_NAME);
         this.birthDate = birthDate;
-        this.gender = resizeString(gender, MAX_LENGTH_GENDER);
+        this.gender = gender;
         this.description = resizeString(description, MAX_LENGTH_DESCRIPTION);
+        this.cpf=cpf;
     }
 
     /**
@@ -29,14 +32,18 @@ public class Registro {
      * @param length length of the final String
      * @return String with length
      */
+
+
 //Transforma a String em uma string com o tamanho informado
     private String resizeString(String str, int length) {
-        return str.length() > length ? str.substring(0, length) : String.format("%" + length + "s", str).replaceAll(" ", "0");
+        if (str.length() > length)
+            return str.substring(0, length);
+        return String.format("%" + length + "s", str).replaceAll(" ", "^");
     }
 
     //remove os caracteres nulos da string
     private String normalizeString(String str) {
-        return str.trim();
+        return str.replaceAll("\\^","");
     }
 
     public String getName() {
@@ -47,12 +54,12 @@ public class Registro {
         this.name = resizeString(name, MAX_LENGTH_NAME);
     }
 
-    public String getGender() {
-        return normalizeString(gender);
+    public char getGender() {
+        return gender;
     }
 
-    public void setGender(String gender) {
-        this.gender = resizeString(gender, MAX_LENGTH_GENDER);
+    public void setGender(char gender) {
+        this.gender = gender;
     }
 
     public String getDescription() {
@@ -62,6 +69,13 @@ public class Registro {
     public void setDescription(String description) {
         this.description = resizeString(description, MAX_LENGTH_DESCRIPTION);
     }
+    public int getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(int cpf) {
+        this.cpf = cpf;
+    }
 
     public LocalDate getBirthDate() {
         return birthDate;
@@ -70,4 +84,31 @@ public class Registro {
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
+
+    public byte[] toByteArray() throws IOException {
+        ByteArrayOutputStream dados = new ByteArrayOutputStream();
+        DataOutputStream saida = new DataOutputStream( dados );
+        saida.writeUTF(name);
+        saida.writeInt(cpf);
+        saida.writeInt(birthDate.getDayOfMonth());
+        saida.writeInt(birthDate.getMonthValue());
+        saida.writeInt(birthDate.getYear());
+        saida.writeChar(gender);
+        saida.writeUTF(description);
+        return dados.toByteArray();
+    }
+
+    public void fromByteArray(byte[] bytes) throws IOException {
+        ByteArrayInputStream dados = new ByteArrayInputStream(bytes);
+        DataInputStream entrada = new DataInputStream(dados);
+        this.name=entrada.readUTF();
+        this.cpf=entrada.readInt();
+        int day =entrada.readInt();
+        int month =entrada.readInt();
+        int year =entrada.readInt();
+        this.birthDate = LocalDate.of(year,month,day);
+        this.gender=entrada.readChar();
+        this.description=entrada.readUTF();
+    }
+
 }

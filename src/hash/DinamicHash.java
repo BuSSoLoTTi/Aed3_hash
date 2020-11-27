@@ -1,7 +1,10 @@
 package hash;
 
+import Dados.Registro;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class DinamicHash {
@@ -17,19 +20,94 @@ public class DinamicHash {
     public DinamicHash(String path) {
         this.path = path;
         definePath();
+        setup();
     }
 
     private void setup(){
         try {
-            RandomAccessFile index = openFile(indexFile);
-            RandomAccessFile master = openFile(masterFile);
-            RandomAccessFile dir = openFile(directoryFile);
-
-
-
-        } catch (FileNotFoundException e) {
+            RandomAccessFile file = openFile(directoryFile);
+            this.depth = file.readInt();
+            if(this.depth==-1){
+                this.depth =1;
+                directory = new int[(int) Math.pow(2,this.depth)];
+                file.seek(0);
+                file.writeInt(this.depth);
+            }
+            else {
+                this.directory = new int[(int) Math.pow(2,this.depth)];
+                for (int i = 0; i <directory.length; i++) {
+                    this.directory[i] = file.readInt();
+                }
+            }
+            file.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+
+    public boolean add(Registro registro){
+        try {
+            int hash = hash(registro.getCpf());
+            if (this.directory[hash] == -1) {
+                currentBucket = new Bucket(this.depth);
+                long[] values = currentBucket.getValues();
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i] == -1) {
+                        values[i] = addMaster(registro);
+                        currentBucket.setValues(values);
+                        this.directory[hash]= (int) addIndex(currentBucket);
+                        return true;
+                    }
+                }
+            }
+            else{
+                currentBucket = getIndex(this.directory[hash]);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private long addMaster(Registro registro) throws IOException {
+        RandomAccessFile file = openFile(this.masterFile);
+        long endFile = file.length();
+        file.seek(endFile);
+        file.write(registro.toByteArray());
+        file.close();
+        return endFile;
+    }
+    private long addIndex(Bucket bucket) throws IOException {
+        RandomAccessFile file = openFile(this.indexFile);
+        long endFile = file.length();
+        file.seek(endFile);
+        file.write(bucket.toByteArray());
+        file.close();
+        return endFile;
+    }
+
+    private Bucket getIndex(int i) throws IOException {
+        RandomAccessFile file = openFile(indexFile);
+        byte[] read = new byte[0];
+        file.read(read,i,Bucket.SIZE);
+
+        return null;
+    }
+
+    public Registro find(int key){
+        return null;
+    }
+
+    private int findAddress(int key){
+        int hash = hash(key);
+        return 0;
+    }
+
+    public boolean remove(int key){
+        return true;
     }
 
     private void definePath(){
@@ -55,8 +133,12 @@ public class DinamicHash {
         return new RandomAccessFile(file, "rw");
     }
 
-    private int hash(){
-        return 0;
+    private int hash(Registro registro){
+        return registro.hashCode();
+    }
+
+    private int hash(int key){
+        return (int) ((key*key)%(Math.pow(2,this.depth)));
     }
 
 }
