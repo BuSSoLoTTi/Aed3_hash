@@ -24,6 +24,16 @@ public class Bucket {
         }
     }
 
+    public boolean add(int key,long value){
+        for (int i = 0; i < SIZE_BUCKET; i++) {
+            if(keys[i]==-1){
+                keys[i]=key;
+                values[i]=value;
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int getDepth() {
         return depth;
@@ -66,11 +76,7 @@ public class Bucket {
         ByteArrayInputStream dados = new ByteArrayInputStream(bytes);
         DataInputStream entrada = new DataInputStream(dados);
         this.depth=entrada.readInt();
-<<<<<<< HEAD
-        int[] key = new int[SIZE_BUCKET];
-=======
         long[] keys = new long[SIZE_BUCKET];
->>>>>>> master
         long[] values = new long[SIZE_BUCKET];
         for (int i = 0; i < SIZE_BUCKET; i++) {
             keys[i]=entrada.readInt();
@@ -81,8 +87,4 @@ public class Bucket {
         this.key=key;
         this.values=values;
     }
-
-
-
-
 }
