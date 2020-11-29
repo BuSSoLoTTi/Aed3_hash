@@ -1,9 +1,6 @@
 package hash;
 
-import Dados.Registro;
-
 import java.io.*;
-import java.time.LocalDate;
 
 public class Bucket {
     public static final int SIZE = 64;
@@ -11,28 +8,45 @@ public class Bucket {
     private int depth;
     private int[] keys;
     private long[] values;
-    private int[] key;
 
-    public Bucket(int deph){
-        this.depth=deph;
-        keys = new  int[SIZE_BUCKET];
-        values = new  long[SIZE_BUCKET];
-        key = new  int[SIZE_BUCKET];
+    public Bucket(int deph) {
+        this.depth = deph;
+        keys = new int[SIZE_BUCKET];
+        values = new long[SIZE_BUCKET];
         for (int i = 0; i < SIZE_BUCKET; i++) {
-            keys[i]=-1;
-            values[i]=-1;
+            keys[i] = -1;
+            values[i] = -1;
         }
     }
 
-    public boolean add(int key,long value){
+    public boolean add(int key, long value) {
         for (int i = 0; i < SIZE_BUCKET; i++) {
-            if(keys[i]==-1){
-                keys[i]=key;
-                values[i]=value;
+            if (keys[i] == -1) {
+                keys[i] = key;
+                values[i] = value;
                 return true;
             }
         }
         return false;
+    }
+
+    public long find(int key) {
+        for (int i = 0; i < keys.length; i++) {
+            if (key == keys[i]) {
+                return values[i];
+            }
+        }
+        return -1;
+    }
+
+    public long remove(int key) {
+        for (int i = 0; i < keys.length; i++) {
+            if (key == keys[i]) {
+                keys[i] = -1;
+                return values[i];
+            }
+        }
+        return -1;
     }
 
     public int getDepth() {
@@ -61,7 +75,7 @@ public class Bucket {
 
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream dados = new ByteArrayOutputStream();
-        DataOutputStream saida = new DataOutputStream( dados );
+        DataOutputStream saida = new DataOutputStream(dados);
         saida.writeInt(depth);
         for (int i = 0; i < SIZE_BUCKET; i++) {
             saida.writeInt(keys[i]);
@@ -75,16 +89,16 @@ public class Bucket {
     public void fromByteArray(byte[] bytes) throws IOException {
         ByteArrayInputStream dados = new ByteArrayInputStream(bytes);
         DataInputStream entrada = new DataInputStream(dados);
-        this.depth=entrada.readInt();
-        long[] keys = new long[SIZE_BUCKET];
+        this.depth = entrada.readInt();
+        int[] keys = new int[SIZE_BUCKET];
         long[] values = new long[SIZE_BUCKET];
         for (int i = 0; i < SIZE_BUCKET; i++) {
-            keys[i]=entrada.readInt();
+            keys[i] = entrada.readInt();
         }
         for (int i = 0; i < SIZE_BUCKET; i++) {
-            values[i]=entrada.readLong();
+            values[i] = entrada.readLong();
         }
-        this.key=key;
-        this.values=values;
+        this.keys = keys;
+        this.values = values;
     }
 }
