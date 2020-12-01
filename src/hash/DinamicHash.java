@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class DinamicHash {
+public class DinamicHash {//comentario aaa
     private int depth;
     private File indexFile;
     private File directoryFile;
