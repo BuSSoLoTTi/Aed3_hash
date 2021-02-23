@@ -12,24 +12,6 @@ public class Aplicacao {
     public static void main(String[] args) throws IOException {
 
 
-//        Bucket bucket = new Bucket(2);
-//        long[] values = bucket.getValues();
-//        values[0]=1;
-//        values[1]=2;
-//        values[2]=3;
-//        values[3]=4;
-//        bucket.setValues(values);
-//        byte[] bytes = bucket.toByteArray();
-//        RandomAccessFile file = new RandomAccessFile("a","rw");
-//        file.write(bytes);
-//        byte[] bytes1 = new byte[Bucket.SIZE];
-//         file.seek(0);
-//         file.read(bytes1, 0, Bucket.SIZE);
-//         Bucket bucket1 = new Bucket(2);
-//         bucket1.fromByteArray(bytes1);
-//        for (long l :bucket1.getValues()) {
-//            System.out.println(l);
-//        }
 
 
 
