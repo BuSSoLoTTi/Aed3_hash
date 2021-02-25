@@ -12,7 +12,7 @@ public class Aplicacao {
     public static void main(String[] args) throws IOException {
 
 
-
+//teste
 
 
 //        Registro registro = new Registro("nome",123,LocalDate.now(),'m',"assasa");
