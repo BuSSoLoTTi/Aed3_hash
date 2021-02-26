@@ -22,8 +22,6 @@ public class Bucket {
             keys[i]=-1;
             values[i]=-1;
         }
-
-        
     }
 
     public boolean add(int key,long value){
